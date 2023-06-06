@@ -9,7 +9,6 @@
    export OPENAI_API_KEY="your secret key"
   npm install -S langchain
   sudo -E /home/derrick/.nvm/versions/node/v18.16.0/bin/node mercurius.js
-  sudo -E . ~/.nvm/nvm.sh; nvm run v18.16.0 mercurius.js
 
   A typical request: localhost?prompt=What%20types%20of%20batteries%20are%20there
 
@@ -33,9 +32,11 @@ async function doit (prompt)
     new HumanChatMessage(
       prompt
     ),
-  ]);
+  ]
+  //, { timeout: 60000 }
+  );
   console.log(JSON.stringify (ret, null, 4));
-  return (ret.response.data)
+  return (ret.text)
 }
 
 const server = http.createServer(async (request, response) =>
@@ -50,17 +51,17 @@ const server = http.createServer(async (request, response) =>
       {
         const fragments = item.split ('=');
         if (fragments.length >= 2)
-          parameters[fragments[0]]=decodeURIComponent(fragments[1]);
+          parameters[fragments[0]] = decodeURIComponent(fragments[1]);
         else
           parameters[fragments[0] = ''];
       })
     }
     if (parameters.prompt)
     {
-      const response = await doit (parameters.prompt);
+      const value = await doit (parameters.prompt);
       response.writeHead(200, {'Content-Type': 'text/html'});
       response.write('<!doctype html><html><head><title>response</title></head><body>');
-      response.write(JSON.stringify (response, null, 4));
+      response.write(JSON.stringify (value, null, 4));
       response.end('</body></html>');
     }
     else
