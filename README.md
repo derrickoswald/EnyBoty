@@ -42,3 +42,8 @@ to a [Node.js server](https://nodejs.org/en/about) that has been pre-configured 
 - The Node.js server submits a formatted Chat Completions API request to OpenAI.
 - The result is unpacked by the Node.js server and returned as the result of the XMLHttpRequest to the browser client.
 - Javascript on the client browser displays the result text and loops to request the next prompt.
+
+For the "Advice from a Website" use-case, the current status is a bunch of stubs:
+- a basic userscript that could (theoretically) send a prompt to the back-end server
+- a back-end server component that can interact with the OpenAI chat model using the Langchain framework
+- a preliminary set of prompts to make the OpenAPI chatGPT software into an energy assistant

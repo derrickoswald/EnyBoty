@@ -14,7 +14,7 @@
 
   A typical request: localhost?prompt=What%20types%20of%20batteries%20are%20there
 
-  A typical response:
+  A typical response (costs $US0.00050):
   {
     "type": "ai",
     "data": {
@@ -73,7 +73,7 @@ const server = http.createServer(async (request, response) =>
         {
           response.writeHead(200, {'Content-Type': 'text/html'});
           response.write('<!doctype html><html><head><title>response</title></head><body>');
-          response.write(JSON.stringify (ret, null, 4));
+          response.write('<pre>' + JSON.stringify (ret, null, 4) + '</pre>');
           response.end('</body></html>');
         })
       .catch ((error) =>
