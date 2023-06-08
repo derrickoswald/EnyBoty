@@ -22,7 +22,15 @@
     }
   }
 
-*/
+  or localhost?prompt=Welche%20Batteriearten%20gibt%20es responds
+  {
+    "type": "ai",
+    "data": {
+        "content": "Es gibt verschiedene Arten von Batterien. Hier sind einige der häufigsten:\n\n1. Alkaline-Batterien: Sie sind die am häufigsten verwendeten Batterien und werden in vielen Geräten wie Fernbedienungen, Taschenlampen, Spielzeugen und Uhren verwendet.\n\n2. Lithium-Ionen-Batterien: Diese Batterien werden in Smartphones, Laptops, Kameras und anderen elektronischen Geräten verwendet. Sie sind leistungsstärker als Alkaline-Batterien, haben jedoch eine kürzere Lebensdauer.\n\n3. Blei-Säure-Batterien: Diese werden in Autos, Motorrädern, Golfwagen und anderen Fahrzeugen verwendet. Sie sind schwerer und größer als andere Batterietypen, aber sie sind auch leistungsstärker.\n\n4. Nickel-Cadmium-Batterien: Sie werden in älteren Mobiltelefonen, Spielzeugen und Werkzeugen verwendet. Sie haben eine längere Lebensdauer als Alkaline-Batterien, sind jedoch giftig und umweltschädlich.\n\n5. Nickel-Metallhydrid-Batterien: Diese werden in Hybridfahrzeugen, elektronischen Geräten und Werkzeugen verwendet. Sie sind leistungsstärker und umweltfreundlicher als Nickel-Cadmium-Batterien, haben aber immer noch eine begrenzte Lebensdauer."
+    }
+  }
+
+  */
 
 const http = require('http');
 const { ChatOpenAI } = require("langchain/chat_models/openai");
@@ -63,35 +71,61 @@ const server = http.createServer(async (request, response) =>
         if (fragments.length >= 2)
           parameters[fragments[0]] = decodeURIComponent(fragments[1]);
         else
-          parameters[fragments[0] = ''];
+          parameters[fragments[0]] = '';
       })
     }
+    console.log(JSON.stringify (parameters, null, 4));
+    const json = parameters.hasOwnProperty("json");
     if (parameters.prompt)
     {
       const value = doit (parameters.prompt)
       .then ((ret) =>
         {
-          response.writeHead(200, {'Content-Type': 'text/html'});
-          response.write('<!doctype html><html><head><title>response</title></head><body>');
-          response.write('<pre>' + JSON.stringify (ret, null, 4) + '</pre>');
-          response.end('</body></html>');
+          if (json)
+          {
+            response.writeHead(200, {'Content-Type': 'application/json'});
+            response.end(ret);
+          }
+          else
+          {
+            response.writeHead(200, {'Content-Type': 'text/html'});
+            response.write('<!doctype html><html><head><title>response</title></head><body>');
+            response.write('<pre>' + ret + '</pre>');
+            response.end('</body></html>');
+          }
         })
       .catch ((error) =>
         {
-          console.error('Error:', error);
-          response.writeHead(500, {'Content-Type': 'text/html'});
-          response.write('<!doctype html><html><head><title>error response</title></head><body>');
-          response.write('<pre>' + JSON.stringify (error, null, 4) + '</pre>');
-          response.end('</body></html>');
+          if (json)
+          {
+            response.writeHead(500, {'Content-Type': 'application/json'});
+            response.end(JSON.stringify (error, null, 4));
+          }
+          else
+          {
+            console.error('Error:', error);
+            response.writeHead(500, {'Content-Type': 'text/html'});
+            response.write('<!doctype html><html><head><title>error response</title></head><body>');
+            response.write('<pre>' + JSON.stringify (error, null, 4) + '</pre>');
+            response.end('</body></html>');
+          }
         }
       )
     }
     else
     {
-      response.writeHead(200, {'Content-Type': 'text/html'});
-      response.write('<!doctype html><html><head><title>error response</title></head><body>');
-      response.write("I'm sorry. I don't know the answer to your question '" + JSON.stringify (parameters, null, 4) + "'");
-      response.end('</body></html>');
+      if (json)
+      {
+        response.writeHead(400, {'Content-Type': 'application/json'});
+        response.end(query[1]);
+      }
+      else
+      {
+        response.writeHead(400, {'Content-Type': 'text/html'});
+        response.write('<!doctype html><html><head><title>error response</title></head><body>');
+        response.write("I'm sorry. I don't know the answer to your question '" + query[1] + "'");
+        response.end('</body></html>');
+      }
     }
   }
   else

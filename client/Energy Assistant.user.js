@@ -45,7 +45,7 @@
     </div>
 `;
                 const div = document.createElement ("div");
-                div.setAttribute ("style", "position: fixed; bottom: 150px; right: 20px;");
+                div.setAttribute ("style", "position: fixed; bottom: 100px; right: 20px; z-index: 100;");
                 div.innerHTML = template;
                 document.getElementsByTagName ("body")[0].appendChild (div);
                 document.getElementById ("submit_prompt").onclick = function(event) {
