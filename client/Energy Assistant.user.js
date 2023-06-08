@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Energy Assistant
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.2
 // @description  Add an energy assistant chatbot to the ewz.ch web site.
 // @author       Derrick Oswald
 // @match        https://www.ewz.ch/de/private/strom/strom-sparen/energiespartipps.html
