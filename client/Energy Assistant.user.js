@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Energy Assistant
 // @namespace    http://tampermonkey.net/
-// @version      0.2
+// @version      0.3
 // @description  Add an energy assistant chatbot to the ewz.ch web site.
 // @author       Derrick Oswald
 // @match        https://www.ewz.ch/de/private/strom/strom-sparen/energiespartipps.html
@@ -14,22 +14,108 @@
 // You should block these with Privacy Badger (https://www.eff.org/pages/privacy-badger) and uBlock Origin (https://ublockorigin.com/).
 // To install this user script in your browser, you will need a user script browser extension like Tamper Monkey (https://www.tampermonkey.net/) or Greasemonkey.
 // Then (basically import it) with "Utilities" "Import from file".
+// You will also need a server running, so see the notes in ../server/mercurius.js and alter localhost below if necessary.
 
 (function() {
     'use strict';
     (
         function initialize ()
         {
-            console.log ("initializing Energy Assistant chatbot");
+            const server = "http://localhost";
+            console.log ("initializing Energy Assistant chatbot to server at " + server);
+
+            /**
+             * @summary Browser independent CORS setup.
+             * @description Creates the CORS request and opens it.
+             * @param {string} method The method type, e.g. "GET" or "POST"
+             * @param {string} url the URL to open the request on
+             * @param {boolean} [asynchronous = true] optional parameter for open() call, default <em>true</em>
+             * @param {boolean} [withcredentials = false] optional parameter for XMLHttpRequest, default <em>false</em>
+             * @returns {object} the request object or <code>null</code> if CORS isn't supported
+             */
+            function createCORSRequest (method, url, asynchronous, withcredentials)
+            {
+                let ret;
+
+                if ("undefined" == typeof (asynchronous))
+                    asynchronous = true;
+                if ("undefined" == typeof (withcredentials))
+                    withcredentials = false;
+                ret = new XMLHttpRequest ();
+                if ("withCredentials" in ret) // "withCredentials" only exists on XMLHTTPRequest2 objects
+                {
+                    ret.open (method, url, asynchronous);
+                    if (withcredentials)
+                        ret.withCredentials = true;
+                }
+                else if (typeof XDomainRequest != "undefined") // IE
+                {
+                    ret = new XDomainRequest ();
+                    ret.open (method, url);
+                }
+                else
+                    ret = null; // CORS is not supported by the browser
+
+                return (ret);
+            }
+
+            /**
+             * @typedef Problem
+             * @property status {int} XMLHttpRequest status
+             * @property statusText {string} XMLHttpRequest status text
+             */
+
+            /**
+             * Promisify native XHR using CORS.
+             *
+             * @param method HTTP verb: GET, PUT, POST, PATCH or DELETE
+             * @param url the URL to fetch
+             * @param data the data to send if POST or PATCH
+             * @param preflight function to manipulate the XMLHttpRequest prior to sending
+             * @returns {Promise<XMLHttpRequest|Problem>} to resolve with the XMLHttpRequest or reject with a problem
+             */
+            function makeRequest (method, url, data, preflight)
+            {
+                return (
+                    new Promise (
+                        function (resolve, reject)
+                        {
+                            const xmlhttp = createCORSRequest (method, url);
+                            if ("function" == typeof (preflight))
+                                preflight (xmlhttp);
+                            xmlhttp.onload = function ()
+                            {
+                                if ((xmlhttp.status >= 200) && (xmlhttp.status < 300))
+                                    resolve (xmlhttp);
+                                else
+                                    reject ({ "status": xmlhttp.status, "statusText": xmlhttp.statusText });
+                            };
+                            xmlhttp.onerror = () => reject ({ "status": xmlhttp.status, "statusText": xmlhttp.statusText });
+                            xmlhttp.send (data);
+                        }
+                    )
+                );
+            }
 
             // send prompt to the server and update the history with the results
-            // note: currently this is a stub
             function sendPrompt (event)
             {
                 const prompt = document.getElementById ("prompt").value;
-                console.log("faking sending a prompt '" + prompt + "' to the server");
-                const current = document.getElementById ("chat_history").innerHTML;
-                document.getElementById ("chat_history").innerHTML = current + prompt + "\n" ;
+                console.log (prompt);
+                const history = document.getElementById ("chat_history");
+                history.innerHTML = history.innerHTML + prompt + "\n";
+
+                const url = server + "?json&prompt=" + encodeURIComponent(prompt);
+
+                makeRequest ("GET", url).then (
+                    (xmlhttp) =>
+                    {
+                        const answer = xmlhttp.response;
+                        console.log (answer);
+                        history.innerHTML = history.innerHTML + answer + "\n";
+                    }
+                )
+                .catch(error => alert(JSON.stringify (error, null, 4)));
             }
 
             // set up a chatbot window

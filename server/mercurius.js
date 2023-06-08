@@ -59,7 +59,18 @@ async function doit (prompt)
 
 const server = http.createServer(async (request, response) =>
 {
-  if(request.method === "GET")
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'OPTIONS, GET',
+    'Access-Control-Max-Age': 2592000, // 30 days
+  };
+
+  if(request.method === "OPTIONS")
+  {
+    response.writeHead(204, headers);
+    response.end();
+  }
+  else if(request.method === "GET")
   {
     let parameters = {};
     let query = request.url.split('?');
@@ -83,12 +94,12 @@ const server = http.createServer(async (request, response) =>
         {
           if (json)
           {
-            response.writeHead(200, {'Content-Type': 'application/json'});
+            response.writeHead(200, {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'});
             response.end(ret);
           }
           else
           {
-            response.writeHead(200, {'Content-Type': 'text/html'});
+            response.writeHead(200, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'});
             response.write('<!doctype html><html><head><title>response</title></head><body>');
             response.write('<pre>' + ret + '</pre>');
             response.end('</body></html>');
@@ -98,13 +109,13 @@ const server = http.createServer(async (request, response) =>
         {
           if (json)
           {
-            response.writeHead(500, {'Content-Type': 'application/json'});
+            response.writeHead(500, {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'});
             response.end(JSON.stringify (error, null, 4));
           }
           else
           {
             console.error('Error:', error);
-            response.writeHead(500, {'Content-Type': 'text/html'});
+            response.writeHead(500, {'Content-Type': 'text/html', 'Access-Control-Allow-Origin': '*'});
             response.write('<!doctype html><html><head><title>error response</title></head><body>');
             response.write('<pre>' + JSON.stringify (error, null, 4) + '</pre>');
             response.end('</body></html>');
@@ -131,7 +142,7 @@ const server = http.createServer(async (request, response) =>
   else
   {
     response.writeHead(405, 'Method Not Supported', {'Content-Type': 'text/html'});
-    return response.end('<!doctype html><html><head><title>405</title></head><body>405: Method "' + request.method + '" Not Supported</body></html>');
+    response.end('<!doctype html><html><head><title>405</title></head><body>405: Method "' + request.method + '" Not Supported</body></html>');
   }
 });
 
