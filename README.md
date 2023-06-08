@@ -43,11 +43,14 @@ to a [Node.js server](https://nodejs.org/en/about) that has been pre-configured 
 - The result is unpacked by the Node.js server and returned as the result of the XMLHttpRequest to the browser client.
 - Javascript on the client browser displays the result text and loops to request the next prompt.
 
-For the "Advice from a Website" use-case, the current status is a bunch of stubs:
-- a basic userscript that could (theoretically) send a prompt to the back-end server
+For the "Advice from a Website" use-case, the current status is a proof of concept:
+- a basic userscript that sends a prompt to the back-end server
 - a back-end server component that can interact with the OpenAI chat model using the Langchain framework
 - a preliminary set of prompts to make the OpenAPI chatGPT software into an energy assistant
 
-Sadly it behaves badly when used from a mobile browser.
-Here is the link to the raw userscript from github (otherwise it's a piece of shit web display of the actual file).
-https://github.com/derrickoswald/energy-assistant/raw/main/client/Energy%20Assistant.user.js
+Here is the link to the [raw userscript](https://github.com/derrickoswald/energy-assistant/raw/main/client/Energy%20Assistant.user.js)
+from github (otherwise it's a piece of shit web display of the actual file)
+that you would need to install in Tampermonkey or Greasemonkey in your browser
+**in addition to a locally running server component (hardcoded localhost)**.
+
+
