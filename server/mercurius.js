@@ -32,29 +32,41 @@
 
   */
 
-const http = require('http');
+const http = require("http");
+const { ConversationChain } = require("langchain/chains");
 const { ChatOpenAI } = require("langchain/chat_models/openai");
-const { HumanChatMessage, SystemChatMessage } = require("langchain/schema");
+const { BufferMemory } = require("langchain/memory");
+const {
+  ChatPromptTemplate,
+  HumanMessagePromptTemplate,
+  SystemMessagePromptTemplate,
+  MessagesPlaceholder,
+} = require ("langchain/prompts");
 
 const hostname = 'localhost'; // '127.0.0.1';
 const port = 80;
 
 const chat = new ChatOpenAI({ temperature: 0.9 });
 
+const chatPrompt = ChatPromptTemplate.fromPromptMessages([
+  SystemMessagePromptTemplate.fromTemplate(
+    "The following is a friendly conversation between a human and a friendly energy assistant AI that provides expert advice for questions about residential electrical consumption and cost savings. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know."
+  ),
+  new MessagesPlaceholder("history"),
+  HumanMessagePromptTemplate.fromTemplate("{input}"),
+]);
+
+const chain = new ConversationChain({
+  memory: new BufferMemory({ returnMessages: true, memoryKey: "history" }),
+  prompt: chatPrompt,
+  llm: chat,
+});
+
 async function doit (prompt)
 {
-  const ret = await chat.call([
-    new SystemChatMessage(
-      "You are a friendly energy assistant that provides expert advice for questions about residential electrical consumption and cost savings."
-    ),
-    new HumanChatMessage(
-      prompt
-    ),
-  ]
-  //, { timeout: 60000 }
-  );
+  const ret = await chain.call({ input: prompt } );
   console.log(JSON.stringify (ret, null, 4));
-  return (ret.text)
+  return (ret.response)
 }
 
 const server = http.createServer(async (request, response) =>
