@@ -54,3 +54,6 @@ that you would need to install in Tampermonkey or Greasemonkey in your browser
 **in addition to a locally running server component (hardcoded localhost)**.
 
 
+## Smart Home Hub Plugin Whiteboard
+
+![Smart Home Hub Plugin Whiteboard](/assets/whiteboard.jpg "whiteboard diagram")
