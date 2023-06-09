@@ -56,4 +56,21 @@ that you would need to install in Tampermonkey or Greasemonkey in your browser
 
 ## Smart Home Hub Plugin Whiteboard
 
-![Smart Home Hub Plugin Whiteboard](/assets/whiteboard.jpg "whiteboard diagram")
+![Smart Home Hub Plugin Whiteboard](/assets/whiteboard.jpg "whiteboard concept")
+
+## Start Simple
+
+![Smart Home Hub Plugin Architecture](/assets/architecture.svg "architecture diagram")
+
+Various devices in the home are periodically sending messages to The Things Network (TTN).
+This produces a time series of "measurements" or a body of "documents" depending on how you look at it.
+
+The ChatBot is configured with an [API Chain](https://js.langchain.com/docs/modules/chains/other_chains/api_chain) which is a textual "paste" of the HTTP endpoint API specification and
+a (templated) question that should produce a HTTP fetch of the data based on the text documentation (here there be magic).
+
+Alternatively, all the documents could be fed into the ChatBot as an [Index Chain](https://js.langchain.com/docs/modules/chains/index_related_chains/document_qa) and then queried via a suitable question.
+
+The end result should allow a user to interact with a ChatBot and request information about the IoT
+devices in their home.
+
+
