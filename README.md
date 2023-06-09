@@ -1,4 +1,4 @@
-# EnybOTY (energy-assistant)
+# EnyBoty (energy-assistant)
 
 [Make Zurich challenge](https://makezurich.ch/start/3/) "Develop a chatbot that draws attention, is fun to use, and helps to save energy."
 
