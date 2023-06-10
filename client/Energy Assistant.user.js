@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Energy Assistant
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      0.4
 // @description  Add an energy assistant chatbot to the ewz.ch web site.
 // @author       Derrick Oswald
 // @match        https://www.ewz.ch/de/private/strom/strom-sparen/energiespartipps.html
@@ -124,14 +124,14 @@
                 const template =
                       `
     <div style='height: 100%; border: 2px solid #003763; border-radius: 4px; background-color: white; padding: 10px;'>
-        <div style='width: 200px; padding-left: 20px; color: #004f8b;'>Energy Assistant</div>
-        <pre id='chat_history' style='max-width: 450px; min-width: 100px; overflow-x: auto; max-height: 400px; overflow-y: scroll; border: 5px solid #e3edf9; padding: 1em; margin-bottom: 1em'></pre>
+        <div style='width: 400px; padding-left: 20px; color: #004f8b;'>Energy Assistant</div>
+        <pre id='chat_history' style='max-width: 650px; min-width: 200px; overflow-x: auto; max-height: 400px; overflow-y: scroll; border: 5px solid #e3edf9; padding: 1em; margin-bottom: 1em'></pre>
         <input id="prompt" name="prompt" type="text" size="40">
         <button id='submit_prompt' type='button' style='float: right; margin-left: 5px;; margin-top: 9px;'>Submit</button>
     </div>
 `;
                 const div = document.createElement ("div");
-                div.setAttribute ("style", "position: fixed; bottom: 100px; right: 20px; z-index: 100;");
+                div.setAttribute ("style", "position: fixed; bottom: 120px; right: 20px; z-index: 100;");
                 div.innerHTML = template;
                 document.getElementsByTagName ("body")[0].appendChild (div);
                 document.getElementById ("submit_prompt").onclick = function(event) {
