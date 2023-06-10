@@ -73,4 +73,15 @@ Alternatively, all the documents could be fed into the ChatBot as an [Index Chai
 The end result should allow a user to interact with a ChatBot and request information about the IoT
 devices in their home.
 
+### Evaluation
+
+The use of the [API Chain](https://js.langchain.com/docs/modules/chains/other_chains/api_chain) method is problematic for three reasons:
+
+1. The text needed to describe the TTN API that would fetch IoT data is fairly large, which is what you pay for with the [OpenAI revenue model](https://openai.com/pricing). For the stupid example code we used, the breakdown is 897 prompt + 65 completion = 962 tokens or about 0.2&cent; per call (or up to 30 times that for the GPT-4 model). The Things Stack is just gnarly and complex. The specification of the API via text, as could be scraped from the [overview](https://www.thethingsindustries.com/docs/the-things-stack/interact/api/) and [The Things Stack API Reference](https://www.thethingsindustries.com/docs/reference/api/) includes many subtleties regarding authentication headers, field codes, JSON message bodies, etc. so that the entire textual description of the API could be on the order of tens of thousand of tokens, which makes the cost prohibitive.
+
+2. The use of the TTN API to fetch IoT data required enabling the [storage integration](https://www.thethingsindustries.com/docs/reference/api/storage_integration/), which means The Things Network is the point of storage for the data. This is not correct usage really, since the intent is just to transmit IoT messages as a pipeline.
+
+3. The use of the OpenAI ChatBot mechanism to do the low level fetching of IoT data is an impedance mismatch. That is it's using a sledge hammer to do the job of a scalpel. It is an illustrated case of the adage "When you have a hammer, everything looks like a nail."
+
+
 
