@@ -83,5 +83,18 @@ The use of the [API Chain](https://js.langchain.com/docs/modules/chains/other_ch
 
 3. The use of the OpenAI ChatBot mechanism to do the low level fetching of IoT data is an impedance mismatch. That is it's using a sledge hammer to do the job of a scalpel. It is an illustrated case of the adage "When you have a hammer, everything looks like a nail."
 
+## Architecture 2
 
+![econd Smart Home Hub Plugin Architecture](/assets/architecture2.svg "second architecture diagram")
+
+We add a bash scripting integrator program to read from The Things Network and send to the ChatBot as a message:
+
+    "Please remember this IoT JSON from my device:" + json
+
+### Evaluation
+
+The initial few messages from the IoT are accepted by the ChatBot and one can ask questions about them using the 
+initial client interface. However, after the first few messages, the process fails.
+
+We ran out of time.
 

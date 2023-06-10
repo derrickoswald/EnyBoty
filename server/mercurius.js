@@ -69,6 +69,7 @@ async function doit (prompt)
   return (ret.response)
 }
 
+
 const server = http.createServer(async (request, response) =>
 {
   const headers = {
@@ -150,6 +151,30 @@ const server = http.createServer(async (request, response) =>
         response.end('</body></html>');
       }
     }
+  }
+  else if(request.method === "PUT")
+  {
+    let body = '';
+    request.on('data', (chunk) => {
+        body += chunk;
+    });
+    request.on('end', () => {
+        console.log(body);
+        const value = doit ("Please remember this IoT JSON from my device:" + body)
+        .then ((ret) =>
+        {
+          response.writeHead(201, {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'});
+          response.end(ret);
+        })
+      .catch ((error) =>
+        {
+          response.writeHead(500, {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'});
+          response.end(JSON.stringify (error, null, 4));
+        }
+      )
+    });
+
+
   }
   else
   {

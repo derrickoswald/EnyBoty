@@ -1,0 +1,29 @@
+#!/bin/bash
+# usage:
+#    export API_KEY="your TTN API key for the application"
+#   export APPLICATION_ID="mz-enyboty" // your application id
+#   export DEVICE_ID="eui-2cf7f1205020ce0d-badgemichel" // your device id in the applcation
+#   ./integrator
+
+while IFS= read -r line
+do
+    if [ -n "$line" ]; then
+      # printf 'I got: %s\n Woo Hoo!\n' "$line"
+      curl --request PUT -d "$line" http://localhost
+    fi
+done < <(curl --silent \
+  --location \
+  --header "Authorization: Bearer ${API_KEY}" \
+  --header "Accept: text/event-stream" \
+  --header "Content-Type: application/json" \
+  --header "User-Agent: my-integration/my-integration-version" \
+  --request POST \
+  --data-raw "{ \
+    \"identifiers\":[{ \
+        \"device_ids\":{ \
+            \"device_id\":\"${DEVICE_ID}\", \
+            \"application_ids\":{\"application_id\":\"${APPLICATION_ID}\"} \
+        } \
+    }] \
+  }" \
+  "https://eu1.cloud.thethings.network/api/v3/events")
